@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="/styles/style_Profile.css">
+</head>
+<body>
+    <!-- Contenedor principal -->
+    <div class="profile-container">
+        <!-- Cabecera del perfil -->
+        <div class="profile-header">
+            <!-- El botón redirige a la página de edición del perfil -->
+            <button class="edit-button" th:if="${propio}" onclick="window.location.href='/editProfile'">Editar Perfil</button>
+            
+            <div class="profile-info">
+                <img src="/images/profile.png" alt="Foto de perfil" class="profile-pic">
+                <h2 class="username" th:text="${user?.username}">Nombre_Usuario</h2>
+                <p class="description" th:text="${user?.bio}">Descripción del usuario.</p>
+				<!-- Solo muestra el botón "Seguir Perfil" si no es el propio perfil -->
+				                <button th:if="${!propio}" class="follow-button">Seguir Perfil</button>
+            </div>
+        </div>
+
+        <!-- Contenedor de tarjetas de videos -->
+        <div class="video-container">
+            <div class="container">
+                <!-- Ejemplo para los videos subidos por el usuario -->
+                <div class="card">
+                    <img src="/images/play.png" alt="Miniatura del video" class="thumbnail">
+                    <div class="card-content">
+                        <h2 class="title">Título del Video</h2>
+                        <p class="description">Esta es una breve descripción del video.</p>
+                        <p class="date">Fecha de lanzamiento: 01 de enero de 2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
