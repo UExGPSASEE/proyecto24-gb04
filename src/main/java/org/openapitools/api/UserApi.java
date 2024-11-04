@@ -204,7 +204,7 @@ public interface UserApi {
         produces = { "application/json" }
     )
     
-    default ResponseEntity<User> getUserByName(
+    default String getUserByName(Model model, HttpSession session,
         @Parameter(name = "username", description = "El nombre por el que se busca. Usar user1 para testing. ", required = true, in = ParameterIn.PATH) @PathVariable("username") String username
     ) {
         getRequest().ifPresent(request -> {
@@ -216,7 +216,7 @@ public interface UserApi {
                 }
             }
         });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return null;
 
     }
 

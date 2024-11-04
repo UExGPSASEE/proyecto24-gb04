@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ProfileController {
+public class UsersController {
 
     @GetMapping("/editProfile")
     public String showEditProfilePage(HttpSession session, Model model) {

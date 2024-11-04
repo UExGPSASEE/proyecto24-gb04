@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <link rel="stylesheet" href="/styles/style_UserList.css">
+</head>
+<body>
+    <div class="user-list-container">
+        <h2>Lista de Usuarios</h2>
+        
+        <!-- Contenedor de tarjetas de usuario -->
+        <div class="user-card-grid">
+            <!-- Ejemplo de tarjeta de usuario, este bloque se repetirá para cada usuario -->
+            <div class="user-card" th:each="user : ${users}">
+                <h3 class="username" th:text="${user.username}">Nombre de Usuario</h3>
+                <p class="description" th:text="${user.bio}">Descripción breve del usuario...</p>
+                <p class="country" th:text="${user.country}">País</p>
+                <!-- Usa un atributo data-* para almacenar el username -->
+                <button class="view-profile-btn" th:data-username="${user.username}" onclick="viewProfileJson(this)">
+                    Ver Perfil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para pasar el nombre de usuario en formato JSON -->
+    <script>
+        function viewProfileJson(button) {
+            const username = button.getAttribute("data-username");  // Obtén el username del atributo data-username
+            console.log("Username:", username); // Para verificar que obtienes el username correcto
+            // Envía la solicitud a la URL de perfil
+            fetch(`/user/${username}`, {  // Inserta el username en la URL
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = `/user/${username}`; // Redirige a la página de perfil
+                } else {
+                    console.error("Error al ver perfil:", response.status);
+                }
+            })
+            .catch(error => {
+                console.error("Error en la petición:", error);
+            });
+        }
+    </script>
+</body>
+</html>

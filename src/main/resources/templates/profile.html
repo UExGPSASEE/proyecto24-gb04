@@ -16,10 +16,12 @@
             
             <div class="profile-info">
                 <img src="/images/profile.png" alt="Foto de perfil" class="profile-pic">
-                <h2 class="username" th:text="${user?.username}">Nombre_Usuario</h2>
-                <p class="description" th:text="${user?.bio}">Descripción del usuario.</p>
-				<!-- Solo muestra el botón "Seguir Perfil" si no es el propio perfil -->
-				                <button th:if="${!propio}" class="follow-button">Seguir Perfil</button>
+                <h2 class="username" id="username" th:text="${user.username}">Nombre_Usuario</h2> <!-- Agrega un ID aquí -->
+                <p class="description" th:text="${user.bio}">Descripción del usuario.</p>
+
+                <!-- Botón "Seguir Perfil" o "Dejar de Seguir Perfil" según el estado -->
+                <button th:if="${!propio && !siguiendo}" class="follow-button" onclick="seguirUsuario()">Seguir Perfil</button>
+                <button th:if="${!propio && siguiendo}" class="unfollow-button" onclick="dejarSeguirUsuario()">Dejar de Seguir Perfil</button>
             </div>
         </div>
 
@@ -38,5 +40,42 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function seguirUsuario() {
+            const username = document.getElementById('username').innerText; // Obtener el nombre de usuario desde el HTML
+			console.log(username);
+            const user = { username: username }; // Crea un objeto user con el username
+
+            fetch('/follow', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user) // Convierte el objeto a JSON
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch(error => console.error('Error al seguir usuario:', error));
+        }
+
+        function dejarSeguirUsuario() {
+            const username = document.getElementById('username').innerText; // Obtener el nombre de usuario desde el HTML
+            const user = { username: username }; // Crea un objeto user con el username
+
+            fetch('/unfollow', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user) // Convierte el objeto a JSON
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch(error => console.error('Error al dejar de seguir usuario:', error));
+        }
+    </script>
 </body>
 </html>

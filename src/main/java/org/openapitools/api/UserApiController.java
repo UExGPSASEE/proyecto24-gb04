@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 
 import org.springframework.ui.Model;
+
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -114,6 +117,10 @@ public class UserApiController implements UserApi {
         } else {
             System.out.println("El usuario no está en sesión.");
         }
+        
+        
+
+        
 
         return "profile";  // Se refiere a un archivo HTML llamado `profile.html` en `src/main/resources/templates`
     }
@@ -146,5 +153,128 @@ public class UserApiController implements UserApi {
     	
     		return "profile";
         }
+    
+    
+    @GetMapping("/user/userList")
+    public String userList(Model model) {
+    	
+    	UsersAccess cliente = new UsersAccess();
+
+    	
+    	 if(!cliente.dbConectar()) {
+             System.out.println("Conexion fallida");
+         }
+
+         // Actualizar usuario
+    	 List<User> users = cliente.dbGetAllUsers(); 
+
+         if(!cliente.dbDesconectar()) {
+             System.out.println("Desconexión fallida");
+         }
+         
+         if(!users.isEmpty())
+        	 model.addAttribute("users", users);
+    	
+    	return "userList";
+    }
+    
+    
+    public boolean isFollowing(List<Long> followers, Long id) {
+        boolean isFollowing = false;
+
+        for (Long followerId : followers) {
+            if (followerId.equals(id)) {
+                isFollowing = true;
+                break;
+            }
+        }
+
+        return isFollowing;
+    }
+    
+    @Override
+    public String getUserByName(Model model, HttpSession session,@Parameter String username) {
+    	
+    	UsersAccess cliente = new UsersAccess();
+
+    	
+   	 if(!cliente.dbConectar()) {
+            System.out.println("Conexion fallida");
+        }
+
+        // Actualizar usuario
+   	 User user = cliente.dbUserbyUsername(username); 
+   	 System.out.println("Usuario: " + user.getUsername());
+   	 
+   	 List<Long> followers = cliente.dbGetFollowers(username);
+   	 
+        if(!cliente.dbDesconectar()) {
+            System.out.println("Desconexión fallida");
+           
+        }
+        
+        User actualUser = (User) session.getAttribute("user");
+      	boolean isFollowing = isFollowing(followers, actualUser.getId());
+        boolean esPropioPerfil = false;
+        
+        if(actualUser != null && user.getUsername().equals(actualUser.getUsername()))
+        	esPropioPerfil = true;
+        	
+        model.addAttribute("propio", esPropioPerfil); // Agrega la variable 'propio' al modelo
+        model.addAttribute("siguiendo", isFollowing);
+        
+        if(user != null) 
+        	model.addAttribute("user", user); // Añadir al modelo para la vista
+
+    	return "profile";
+    }
+    
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/follow",
+            consumes = { "application/json" }
+        )
+    public String followUser(Model model, @RequestBody User userRequest, HttpSession session) {
+    	
+    	UsersAccess cliente = new UsersAccess();
+    	
+    	User userSesion = (User) session.getAttribute("user");
+
+    	
+    	if(!cliente.dbConectar()) {
+            System.out.println("Conexion fallida");
+        }
+
+        // Actualizar usuario
+   	 cliente.dbFollow(userRequest.getUsername(), userSesion.getId()); 
+   	 System.out.println("$$$$$$$$USERNAME: " + userRequest.getUsername());
+   	 User userProfile = cliente.dbUserbyUsername(userRequest.getUsername());
+   	 System.out.println("$$$$$$$$$$userProfile.getId()"+userProfile.getId());
+   	 cliente.dbFollowing(userSesion.getUsername(), userProfile.getId());
+   	 
+
+        if(!cliente.dbDesconectar()) {
+            System.out.println("Desconexión fallida");
+           
+        }
+        model.addAttribute("user", userProfile);
+        
+        model.addAttribute("propio", false); // Agrega la variable 'propio' al modelo
+        model.addAttribute("siguiendo", true);
+
+    	
+    	return "profile";
+    }
+    
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/unfollow",
+            consumes = { "application/json" }
+        )
+    public String unfollowUser(Model model,@RequestBody String username) {
+    	
+    	
+    	return "profile";
+    }
     
 }

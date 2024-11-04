@@ -146,6 +146,15 @@ public class UsersAccess {
     	return Arrays.asList(array);
     }
     
+    /*
+    public List<Integer> convertintoListInt(Array lista) throws SQLException{
+    	
+    	Integer[] array = (Integer[]) lista.getArray();
+    	
+    	return Arrays.asList(array);
+    }
+    */
+    
     public User dbUserbyUsername(String username) {
     	PreparedStatement ps;
     	User user = new User();
@@ -225,6 +234,133 @@ public class UsersAccess {
         }
         
         return isUpdated;
+    }
+    
+    public List<User> dbGetAllUsers() {
+        PreparedStatement ps;
+        List<User> userList = new ArrayList<>();
+
+        System.out.println("---dbGetAllUsers---");
+
+        try {
+            String selectQuery = "SELECT Username, firstname, lastname, email, password, bio, role, country, profilepicture, birthdate FROM Users";
+            ps = conexion.prepareStatement(selectQuery);
+
+            ResultSet rset = ps.executeQuery();
+
+            // Recorre el ResultSet y crea un objeto User para cada fila
+            while (rset.next()) {
+                User user = new User();
+                user.setUsername(rset.getString("Username"));
+                user.setFirstName(rset.getString("firstname"));
+                user.setLastName(rset.getString("lastname"));
+                user.setEmail(rset.getString("email"));
+                user.setPassword(rset.getString("password"));
+                user.setBio(rset.getString("bio"));
+                user.setRole(rset.getString("role"));
+                user.setCountry(rset.getString("country"));
+                user.setProfilePicture(rset.getString("profilepicture"));
+                user.setBirthdate(rset.getDate("birthdate").toLocalDate());
+
+                userList.add(user); // Agrega el usuario a la lista
+            }
+            rset.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userList; // Devuelve la lista de usuarios
+    }
+    
+    public List<Long> dbGetFollowers(String username){
+        PreparedStatement ps;
+    	List<Long> followers = new ArrayList<>();
+    	
+    	 System.out.println("---dbGetFollowers---");
+    	 
+         try {
+             String selectQuery = "SELECT following FROM Users WHERE username = ?";
+             ps = conexion.prepareStatement(selectQuery);
+             ps.clearParameters();
+             
+             ps.setString(1, username);
+
+             ResultSet rset = ps.executeQuery();
+
+             // Recorre el ResultSet y crea un objeto User para cada fila
+             while (rset.next()) {
+                 followers = convertintoList(rset.getArray(1));
+             }
+             rset.close();
+
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+    	
+    	return followers;
+    }
+    
+    //Username = usuario al que seguimos
+    //id = usuario de la sesión
+    public void dbFollow(String username, Long id) {
+    	PreparedStatement ps;
+    	
+    	 System.out.println("---dbFollow---");
+    	 
+         try {
+             String updateQuery = "UPDATE Users SET followers = array_append(followers, ?) WHERE username = ? AND NOT (? = ANY(followers))";
+             ps = conexion.prepareStatement(updateQuery);
+             ps.clearParameters();
+             
+             ps.setLong(1, id);
+             ps.setString(2, username);
+             ps.setLong(3, id);
+
+             Integer updateRows = ps.executeUpdate();
+            
+             if(updateRows > 0)
+            	 System.out.println("Consulta ejecutada correctamente");
+             else
+            	 System.out.println("Consulta fallida");
+
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+         
+         //dbFollowing(username, id);
+    	
+    }
+    
+    //Username = usuario de la sesión
+    //id = usuario al que seguimos
+    public void dbFollowing(String username, Long id) {
+    	PreparedStatement ps;
+    	
+    	 System.out.println("---dbFollowing---");
+    	 
+         try {
+             String updateQuery = "UPDATE Users SET following = array_append(following, ?) WHERE username = ? AND NOT (? = ANY(following))";
+             ps = conexion.prepareStatement(updateQuery);
+             ps.clearParameters();
+             
+             ps.setLong(1, id);
+             ps.setString(2, username);
+             ps.setLong(3, id);
+
+             Integer updateRows = ps.executeUpdate();
+            
+             if(updateRows > 0)
+            	 System.out.println("Consulta ejecutada correctamente");
+             else
+            	 System.out.println("Consulta fallida");
+
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+         
+         
+    	
     }
 
 }
