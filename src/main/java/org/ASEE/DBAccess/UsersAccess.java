@@ -362,6 +362,60 @@ public class UsersAccess {
          
     	
     }
+    
+ // Username = usuario al que dejamos de seguir
+ // id = usuario de la sesión
+ public void dbUnfollow(String username, Long id) {
+     PreparedStatement ps;
+
+     System.out.println("---dbUnfollow---");
+
+     try {
+         String updateQuery = "UPDATE Users SET followers = array_remove(followers, ?) WHERE username = ?";
+         ps = conexion.prepareStatement(updateQuery);
+         ps.clearParameters();
+
+         ps.setLong(1, id);
+         ps.setString(2, username);
+
+         Integer updateRows = ps.executeUpdate();
+
+         if (updateRows > 0)
+             System.out.println("Consulta ejecutada correctamente");
+         else
+             System.out.println("Consulta fallida");
+
+     } catch (SQLException e) {
+         e.printStackTrace();
+     }
+ }
+
+ // Username = usuario de la sesión
+ // id = usuario al que dejamos de seguir
+ public void dbRemoveFollowing(String username, Long id) {
+     PreparedStatement ps;
+
+     System.out.println("---dbRemoveFollowing---");
+
+     try {
+         String updateQuery = "UPDATE Users SET following = array_remove(following, ?) WHERE username = ?";
+         ps = conexion.prepareStatement(updateQuery);
+         ps.clearParameters();
+
+         ps.setLong(1, id);
+         ps.setString(2, username);
+
+         Integer updateRows = ps.executeUpdate();
+
+         if (updateRows > 0)
+             System.out.println("Consulta ejecutada correctamente");
+         else
+             System.out.println("Consulta fallida");
+
+     } catch (SQLException e) {
+         e.printStackTrace();
+     }
+ }
 
 }
 

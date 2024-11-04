@@ -271,10 +271,39 @@ public class UserApiController implements UserApi {
             value = "/unfollow",
             consumes = { "application/json" }
         )
-    public String unfollowUser(Model model,@RequestBody String username) {
+    public String unfollowUser(Model model,@RequestBody User userRequest, HttpSession session) {
     	
+    	UsersAccess cliente = new UsersAccess();
+    	
+    	User userSesion = (User) session.getAttribute("user");
+
+    	
+    	if(!cliente.dbConectar()) {
+            System.out.println("Conexion fallida");
+        }
+
+        // Actualizar usuario
+   	 cliente.dbUnfollow(userRequest.getUsername(), userSesion.getId()); 
+   	 System.out.println("$$$$$$$$USERNAME: " + userRequest.getUsername());
+   	 User userProfile = cliente.dbUserbyUsername(userRequest.getUsername());
+   	 System.out.println("$$$$$$$$$$userProfile.getId()"+userProfile.getId());
+   	 cliente.dbRemoveFollowing(userSesion.getUsername(), userProfile.getId());
+   	 
+
+        if(!cliente.dbDesconectar()) {
+            System.out.println("Desconexión fallida");
+           
+        }
+        model.addAttribute("user", userProfile);
+        
+        model.addAttribute("propio", false); // Agrega la variable 'propio' al modelo
+        model.addAttribute("siguiendo", true);
+
     	
     	return "profile";
+    
     }
+    
+    
     
 }
