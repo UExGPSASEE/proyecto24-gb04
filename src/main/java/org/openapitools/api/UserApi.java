@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -69,7 +70,7 @@ public interface UserApi {
     )
     
     default ResponseEntity<User> createUser(
-        @Parameter(name = "User", description = "Crea un objeto User") @Valid @RequestBody(required = false) User user
+        @Parameter(name = "User", description = "Crea un objeto User") @Valid @RequestBody(required = false) User user, HttpSession session
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -110,8 +111,7 @@ public interface UserApi {
         value = "/user/{username}"
     )
     
-    default ResponseEntity<Void> deleteUser(
-        @Parameter(name = "username", description = "El nombre del usuario a borrar", required = true, in = ParameterIn.PATH) @PathVariable("username") String username
+    default ResponseEntity<Void> deleteUser(HttpSession session, @PathVariable String username
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -273,10 +273,10 @@ public interface UserApi {
         value = "/user/logout"
     )
     
-    default ResponseEntity<Void> logoutUser(
+    default RedirectView logoutUser(HttpSession session
         
     ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return null;
 
     }
 

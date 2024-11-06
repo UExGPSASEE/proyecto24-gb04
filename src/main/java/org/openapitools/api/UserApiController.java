@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.view.RedirectView;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -40,7 +41,7 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user, HttpSession session) {
         // Procesa y muestra el JSON recibido en la consola
         System.out.println("Datos del usuario recibido:");
         System.out.println("Username: " + user.getUsername());
@@ -61,6 +62,9 @@ public class UserApiController implements UserApi {
     	if(!cliente.dbDesconectar()) {
     		System.out.println("Desconexión fallida");
     	}
+    	
+    	session.setAttribute("user", user);
+    	
 
         // Retorna el usuario recibido como respuesta JSON
         return new ResponseEntity<>(user, HttpStatus.CREATED);
@@ -113,13 +117,11 @@ public class UserApiController implements UserApi {
          // Aquí determinamos si el perfil es del usuario actual
             boolean esPropioPerfil = true; 
             model.addAttribute("propio", esPropioPerfil); // Agrega la variable 'propio' al modelo
+            model.addAttribute("siguiendo", false); // Agrega la variable 'propio' al modelo
             
         } else {
             System.out.println("El usuario no está en sesión.");
         }
-        
-        
-
         
 
         return "profile";  // Se refiere a un archivo HTML llamado `profile.html` en `src/main/resources/templates`
@@ -150,6 +152,8 @@ public class UserApiController implements UserApi {
      // Aquí determinamos si el perfil es del usuario actual
         boolean esPropioPerfil = true; 
         model.addAttribute("propio", esPropioPerfil); // Agrega la variable 'propio' al modelo
+        model.addAttribute("siguiendo", false); // Agrega la variable 'propio' al modelo
+        model.addAttribute("user", user);
     	
     		return "profile";
         }
@@ -303,6 +307,44 @@ public class UserApiController implements UserApi {
     	return "profile";
     
     }
+    @Override
+    public RedirectView logoutUser(HttpSession session) {
+    	
+    	System.out.println("------logoutUser-------");
+    	session.removeAttribute("user");
+    	
+    	return new RedirectView("/login.html");
+
+    }
+    @Override
+    public ResponseEntity<Void> deleteUser(HttpSession session, @PathVariable String username) {
+    	
+    	System.out.println("---------deleteUser---------");
+    	
+    	UsersAccess cliente = new UsersAccess();
+    	
+    	User userSesion = (User) session.getAttribute("user");
+
+    	
+    	if(!cliente.dbConectar()) {
+            System.out.println("Conexion fallida");
+        }
+
+        // borrar usuario
+    	cliente.dbRemoveUser(userSesion.getUsername());
+   	 
+
+        if(!cliente.dbDesconectar()) {
+            System.out.println("Desconexión fallida");
+           
+        }
+        
+        session.removeAttribute("user");
+    	
+    	return ResponseEntity.ok().build();
+
+        }
+
     
     
     

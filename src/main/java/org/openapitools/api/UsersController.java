@@ -19,4 +19,5 @@ public class UsersController {
         model.addAttribute("user", user); // Pasa el objeto usuario al modelo
         return "editProfile"; // Carga el template editProfile.html
     }
+    
 }

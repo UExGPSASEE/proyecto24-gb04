@@ -38,6 +38,36 @@ html, body {
     transition: transform 0.3s ease;
 }
 
+.profile-header .delete-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ff5e4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    transition: transform 0.3s ease;
+}
+
+.profile-header .logout-button {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    transition: transform 0.3s ease;
+}
+
 .profile-header .follow-button {
     background-color: #333;
     color: white;
@@ -55,6 +85,10 @@ html, body {
     transform: translateY(-10px);
 }
 
+.profile-header .logout-button:hover {
+    background-color: #555;
+    transform: translateY(-10px);
+}
 .profile-header .follow-button:hover {
     background-color: #555;
     transform: translateY(-10px);

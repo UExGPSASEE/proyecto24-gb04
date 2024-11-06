@@ -47,6 +47,7 @@
                     const responseData = await response.json();
                     console.log("Usuario creado:", responseData);
                     alert("Usuario creado exitosamente");
+					window.location.href='/user/profile';
                 } else {
                     console.error("Error al crear el usuario:", response.status);
                     alert("Error al crear el usuario");

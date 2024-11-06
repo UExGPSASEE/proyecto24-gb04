@@ -106,37 +106,42 @@ public class UsersAccess {
     }
     
     public void dbAddUser(User user) {
-    	PreparedStatement ps;
-    	
-    	System.out.println("---dbAddUser---");
-    	
-    	try {
-    		String insertQuery = "INSERT INTO Users (username, email, password) VALUES (?,?,?)";
-    		ps = conexion.prepareStatement(insertQuery);
-    		
-    		String username = user.getUsername();
-    		String email = user.getEmail();
-    		String password = user.getPassword();
-    		
-    		ps.setString(1, username);
-    		ps.setString(2, email);
-    		ps.setString(3, password);
-    		
-    		int rowsInserted = ps.executeUpdate();
-    		// Comprobar si la inserción fue exitosa
-    		
+        PreparedStatement ps;
+        
+        System.out.println("---dbAddUser---");
+        
+        try {
+            String insertQuery = "INSERT INTO Users (username, email, password, uploadedvideos, watchedvideos, followers, following) VALUES (?,?,?,?,?,?,?)";
+            ps = conexion.prepareStatement(insertQuery);
+            
+            String username = user.getUsername();
+            String email = user.getEmail();
+            String password = user.getPassword();
+            
+            ps.setString(1, username);
+            ps.setString(2, email);
+            ps.setString(3, password);
+            
+            // Inicializar los campos como arrays de enteros vacíos
+            Array emptyArray = conexion.createArrayOf("integer", new Integer[0]);
+            ps.setArray(4, emptyArray); // uploadedvideos
+            ps.setArray(5, emptyArray); // watchedvideos
+            ps.setArray(6, emptyArray); // followers
+            ps.setArray(7, emptyArray); // following
+            
+            int rowsInserted = ps.executeUpdate();
+            
             if (rowsInserted > 0) {
                 System.out.println("¡El Usuario fue insertado exitosamente!");
-            }else {
+            } else {
                 System.out.println("ERROR: No se ha insertado el usuario");
             }
             
             ps.close();
             
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    	}
-    	
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     public List<Long> convertintoList(Array lista) throws SQLException{
@@ -416,6 +421,31 @@ public class UsersAccess {
          e.printStackTrace();
      }
  }
+ 
+	//Username = usuario a eliminar
+	public void dbRemoveUser(String username) {
+	  PreparedStatement ps;
+	
+	  System.out.println("---dbRemoveUser---");
+	
+	  try {
+	      String deleteQuery = "DELETE FROM Users WHERE username = ?";
+	      ps = conexion.prepareStatement(deleteQuery);
+	      ps.clearParameters();
+	
+	      ps.setString(1, username);
+	
+	      Integer updateRows = ps.executeUpdate();
+	
+	      if (updateRows > 0)
+	          System.out.println("Usuario eliminado correctamente");
+	      else
+	          System.out.println("No se encontró el usuario para eliminar");
+	
+	  } catch (SQLException e) {
+	      e.printStackTrace();
+	  }
+	}
 
 }
 
