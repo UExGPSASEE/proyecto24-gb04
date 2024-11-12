@@ -27,7 +27,7 @@ public class UsersAccess {
         String driver = "org.postgresql.Driver";
         String numdep = "localhost"; // Direccion IP
         String puerto = "5432";
-        String database = "ASEE";
+        String database = "ASEE_Users";
         String url = "jdbc:postgresql://" + numdep + ":" + puerto + "/" + database;
         String usuario = "postgres";
         String contrasena = "12345";
@@ -92,10 +92,9 @@ public class UsersAccess {
                 System.out.println("Country: " + rset.getString(9));
                 System.out.println("Profile Picture: " + rset.getString(10));
                 System.out.println("Birthdate: " + rset.getDate(11));
-                System.out.println("Uploaded Videos: " + rset.getArray(12));
-                System.out.println("Watched Videos: " + rset.getArray(13));
-                System.out.println("Followers: " + rset.getArray(14));
-                System.out.println("Following: " + rset.getArray(15));
+                System.out.println("Watched Videos: " + rset.getArray(12));
+                System.out.println("Followers: " + rset.getArray(13));
+                System.out.println("Following: " + rset.getArray(14));
                 
                 System.out.println("---------------------------------------");
             }
@@ -111,7 +110,7 @@ public class UsersAccess {
         System.out.println("---dbAddUser---");
         
         try {
-            String insertQuery = "INSERT INTO Users (username, email, password, uploadedvideos, watchedvideos, followers, following) VALUES (?,?,?,?,?,?,?)";
+            String insertQuery = "INSERT INTO Users (username, email, password, watchedvideos, followers, following) VALUES (?,?,?,?,?,?)";
             ps = conexion.prepareStatement(insertQuery);
             
             String username = user.getUsername();
@@ -124,10 +123,9 @@ public class UsersAccess {
             
             // Inicializar los campos como arrays de enteros vacíos
             Array emptyArray = conexion.createArrayOf("integer", new Integer[0]);
-            ps.setArray(4, emptyArray); // uploadedvideos
-            ps.setArray(5, emptyArray); // watchedvideos
-            ps.setArray(6, emptyArray); // followers
-            ps.setArray(7, emptyArray); // following
+            ps.setArray(4, emptyArray); // watchedvideos
+            ps.setArray(5, emptyArray); // followers
+            ps.setArray(6, emptyArray); // following
             
             int rowsInserted = ps.executeUpdate();
             
@@ -189,13 +187,11 @@ public class UsersAccess {
                 if(rset.getDate(11) != null)
                 user.setBirthdate(rset.getDate(11).toLocalDate());
                 if(rset.getArray(12) != null)
-                user.setUploadedVideos(convertintoList(rset.getArray(12)));
+                user.setWatchedVideos(convertintoList(rset.getArray(12)));
                 if(rset.getArray(13) != null)
-                user.setWatchedVideos(convertintoList(rset.getArray(13)));
+                user.setFollowers(convertintoList(rset.getArray(13)));
                 if(rset.getArray(14) != null)
-                user.setFollowers(convertintoList(rset.getArray(14)));
-                if(rset.getArray(15) != null)
-                user.setFollowing(convertintoList(rset.getArray(15)));
+                user.setFollowing(convertintoList(rset.getArray(14)));
                 
                 
            }
