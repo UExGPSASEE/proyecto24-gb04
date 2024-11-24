@@ -22,6 +22,7 @@ public class UsersAccess {
     /* --------------METODO PARA REALIZAR LA CONEXION-------------------- */
     /* ------------------------------------------------------------------ */
     public boolean dbConectar() {
+    	
         
         System.out.println("---dbConectar---");
         // Crear la conexion a la base de datos 
