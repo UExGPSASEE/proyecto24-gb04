@@ -1,6 +1,7 @@
-package org.ASEE.DBAccess;
+package org.ASEE.dbaccess;
 
 import java.sql.Array;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -11,11 +12,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.openapitools.model.User;
 
 public class UsersAccess {
 
+	private static final Logger LOGGER = Logger.getLogger(UsersAccess.class.getName());
 	 //SE DECLARA LA CONEXIÓN
     private static Connection conexion = null ; 
     /* ------------------------------------------------------------------ */
@@ -23,7 +26,7 @@ public class UsersAccess {
     /* ------------------------------------------------------------------ */
     public boolean dbConectar() {
         
-        System.out.println("---dbConectar---");
+    	   LOGGER.info("---dbConectar---");
         // Crear la conexion a la base de datos 
         String driver = "org.postgresql.Driver";
         String numdep = "localhost"; // Direccion IP
@@ -153,15 +156,7 @@ public class UsersAccess {
     	return Arrays.asList(array);
     }
     
-    /*
-    public List<Integer> convertintoListInt(Array lista) throws SQLException{
-    	
-    	Integer[] array = (Integer[]) lista.getArray();
-    	
-    	return Arrays.asList(array);
-    }
-    */
-    
+  
     public User dbUserbyUsername(String username) {
     	PreparedStatement ps;
     	User user = new User();
@@ -188,17 +183,21 @@ public class UsersAccess {
                 user.setRole(rset.getString(8));
                 user.setCountry(rset.getString(9));
                 user.setProfilePicture(rset.getString(10));
-                if(rset.getDate(11) != null)
+                if(rset.getDate(11) != null) {
                 user.setBirthdate(rset.getDate(11).toLocalDate());
-                if(rset.getArray(12) != null)
+                }
+                if(rset.getArray(12) != null) {
                 user.setUploadedVideos(convertintoList(rset.getArray(12)));
-                if(rset.getArray(13) != null)
+                }
+                if(rset.getArray(13) != null) {
                 user.setWatchedVideos(convertintoList(rset.getArray(13)));
-                if(rset.getArray(14) != null)
+                }
+                if(rset.getArray(14) != null) {
                 user.setFollowers(convertintoList(rset.getArray(14)));
-                if(rset.getArray(15) != null)
+                }
+                if(rset.getArray(15) != null) {
                 user.setFollowing(convertintoList(rset.getArray(15)));
-                
+                }
                 
            }
            rset.close();
