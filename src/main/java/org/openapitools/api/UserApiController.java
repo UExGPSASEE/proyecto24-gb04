@@ -8,7 +8,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.ASEE.DBAccess.UsersAccess;
+import org.ASEE.dbaccess.UsersAccess;
 import org.openapitools.model.LikeVideoRequest;
 import org.openapitools.model.LoginRequest;
 import org.openapitools.model.User;
